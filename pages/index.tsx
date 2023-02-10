@@ -13,7 +13,13 @@ import {   Flex,
   Button,
   Heading,
   Text,
-  useColorModeValue,  } from "@chakra-ui/react";
+  useColorModeValue,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  Select,  } from "@chakra-ui/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -53,28 +59,54 @@ export default function Home() {
                 direction={{ base: 'column', sm: 'row' }}
                 align={'start'}
                 justify={'space-between'}>
-                <Checkbox>Remember me</Checkbox>
-                <Link color={'blue.400'}>Forgot password?</Link>
-            </Stack>
-            <FormControl id="password">
+              <FormControl id="duration">
               <FormLabel>Duration</FormLabel>
-              <Input type="password" />
-            </FormControl>
-            <Stack spacing={10}>
-              <Stack
+              <NumberInput defaultValue={1}>
+                <NumberInputField/>
+                <NumberInputStepper>
+                <NumberIncrementStepper/>
+                <NumberDecrementStepper/>
+                </NumberInputStepper>
+              </NumberInput>
+              </FormControl>
+              <FormControl id="type">
+              <FormLabel>Type</FormLabel>
+              <Select defaultValue={"option1"}>
+                <option value='option1'>Minute(s)</option>
+                <option value='option1'>Hour(s)</option>
+                <option value='option2'>Day(s)</option>
+                <option value='option3'>Week(s)</option>
+                <option value='option3'>Month(s)</option>
+              </Select>
+              </FormControl>
+            </Stack>
+            <Stack
                 direction={{ base: 'column', sm: 'row' }}
                 align={'start'}
                 justify={'space-between'}>
-                <Checkbox>Remember me</Checkbox>
-                <Link color={'blue.400'}>Forgot password?</Link>
-              </Stack>
               <Button
                 bg={'blue.400'}
                 color={'white'}
                 _hover={{
                   bg: 'blue.500',
                 }}>
-                Sign in
+                Encrypt
+              </Button>
+              <Button
+                bg={'blue.400'}
+                color={'white'}
+                _hover={{
+                  bg: 'blue.500',
+                }}>
+                Share
+              </Button>
+              <Button
+                bg={'blue.400'}
+                color={'white'}
+                _hover={{
+                  bg: 'blue.500',
+                }}>
+                Post
               </Button>
             </Stack>
           </Stack>
