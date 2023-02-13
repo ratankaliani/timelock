@@ -43,7 +43,8 @@ func main() {
 		// fmt.Println("Duration:", requestBody.Duration)
 
 		// Encrypt the message
-		encryptedMessage, err := EncryptData(time.Duration(requestBody.Duration), requestBody.Message)
+		duration := time.Duration(requestBody.Duration) * time.Second
+		encryptedMessage, err := EncryptData(duration, requestBody.Message)
 		if err != nil {
 			http.Error(w, "Failed to encrypt message", http.StatusInternalServerError)
 			return
@@ -74,7 +75,7 @@ func main() {
 			return
 		}
 
-		fmt.Println("Body:", requestBody.Body)
+		// fmt.Println("Body:", requestBody.Body)
 		encMessage := bytes.NewBuffer(requestBody.Body)
 		// Encrypt the message
 		message, err := DecryptData(encMessage)

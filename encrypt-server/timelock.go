@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"time"
 
@@ -67,10 +68,10 @@ func DecryptData(cipherData *bytes.Buffer) (string, error) {
 	// Decrypt the data. If you try to decrypt the data *before* the specified
 	// duration, it will fail with the message: "too early to decrypt".
 	if err := tlock.New(network).Decrypt(&plainData, cipherData); err != nil {
-		log.Fatalf("decrypt: %v", err)
+		// log.Fatalf("decrypt: %v", err)
 		return "", err
 	}
-
+	fmt.Println(plainData)
 	// Turn the decrypted data into a string.
 	return plainData.String(), nil
 

@@ -21,7 +21,7 @@ func TestTLE(t *testing.T) {
 	println("Encrypted Data!")
 	strCipher := cipherData.String()
 	// Wait for the duration to pass.
-	time.Sleep(duration)
+	// time.Sleep(duration)
 
 	bytesCipher := []byte(strCipher)
 	buffer := bytes.NewBuffer(bytesCipher)
