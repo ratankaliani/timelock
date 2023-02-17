@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "@next/font/google";
+import { useState } from "react";
 import styles from "@/styles/Home.module.css";
 import {   Flex,
   Box,
@@ -23,7 +24,51 @@ import {   Flex,
 
 const inter = Inter({ subsets: ["latin"] });
 
+
+async function handleEncrypt(
+  e: { preventDefault: () => void },
+  message: string,
+  duration: number,
+  durationType: string
+) {
+  var multiplier = 1;
+  if (durationType == "min") {
+    multiplier = 60;
+  } else if (durationType == "h") {
+    multiplier = 60*60;
+  } else if (durationType == "d") {
+    multiplier = 24*60*60;
+  } else if (durationType == "w") {
+    multiplier = 7*24*60*60;
+  } else if (durationType == "mo") {
+    multiplier = 30*24*60*60;
+  }
+  console.log("Encrypting message: " + message + " for " + duration * multiplier + " seconds.")
+  e.preventDefault();
+  const res = await fetch("/api/encrypt", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ message: message, duration: duration }),
+  });
+  const data = await res.json();
+  console.log(data);
+
+}
+
+
+
+
 export default function Home() {
+  const [message, setMessage] = useState<string>("");
+  const [duration, setDuration] = useState<number>(1);
+  const [durationType, setDurationType] = useState<string>("min");
+
+  async function handleDurationType(e: any) {
+    setDurationType(e.target.value);
+  }
+
   return (
     <>
       <Head>
@@ -51,9 +96,12 @@ export default function Home() {
           boxShadow={'lg'}
           p={8}>
           <Stack spacing={4}>
-            <FormControl id="email">
+            <FormControl id="message">
               <FormLabel>Message</FormLabel>
-              <Input type="email" />
+              <Input 
+              type="message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)} />
             </FormControl>
             <Stack
                 direction={{ base: 'column', sm: 'row' }}
@@ -61,7 +109,8 @@ export default function Home() {
                 justify={'space-between'}>
               <FormControl id="duration">
               <FormLabel>Duration</FormLabel>
-              <NumberInput defaultValue={1}>
+              <NumberInput defaultValue={1}
+                onChange={(_, n) => setDuration(n)}>
                 <NumberInputField/>
                 <NumberInputStepper>
                 <NumberIncrementStepper/>
@@ -69,14 +118,15 @@ export default function Home() {
                 </NumberInputStepper>
               </NumberInput>
               </FormControl>
-              <FormControl id="type">
+              <FormControl id="durationtype">
               <FormLabel>Type</FormLabel>
-              <Select defaultValue={"option1"}>
-                <option value='option1'>Minute(s)</option>
-                <option value='option1'>Hour(s)</option>
-                <option value='option2'>Day(s)</option>
-                <option value='option3'>Week(s)</option>
-                <option value='option3'>Month(s)</option>
+              <Select defaultValue={"min"}
+              onChange={handleDurationType}>
+                <option value='min'>Minute(s)</option>
+                <option value='h'>Hour(s)</option>
+                <option value='d'>Day(s)</option>
+                <option value='w'>Week(s)</option>
+                <option value='mo'>Month(s)</option>
               </Select>
               </FormControl>
             </Stack>
@@ -89,7 +139,8 @@ export default function Home() {
                 color={'white'}
                 _hover={{
                   bg: 'blue.500',
-                }}>
+                }}
+                onClick={(e) => handleEncrypt(e, message, duration, durationType)}>
                 Encrypt
               </Button>
               <Button
