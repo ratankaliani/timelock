@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
+	"strconv"
 	"time"
 )
 
@@ -16,7 +18,9 @@ type EncryptRequest struct {
 }
 
 type EncryptedMessage struct {
-	Body []byte `json:"body"`
+	Body  []byte `json:"body"`
+	Round int64  `json:"round"`
+	Time  int64  `json:"time"`
 }
 
 type Message struct {
@@ -50,7 +54,15 @@ func main() {
 			return
 		}
 		// Return the encrypted message
-		enc := EncryptedMessage{Body: encryptedMessage.Bytes()}
+		regex := regexp.MustCompile(`tlock\s+(\d+)`)
+		match := regex.FindStringSubmatch(encryptedMessage.String())
+		if len(match) != 2 {
+			err := fmt.Errorf("failed to parse round number from encrypted message")
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		round, _ := strconv.ParseInt(match[1], 10, 64)
+		enc := EncryptedMessage{Body: encryptedMessage.Bytes(), Round: round, Time: time.Now().Add(duration).Unix()}
 		json, err := json.Marshal(enc)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
