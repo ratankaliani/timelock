@@ -18,17 +18,23 @@ type EncryptRequest struct {
 }
 
 type EncryptedMessage struct {
-	Body  []byte `json:"body"`
-	Round int64  `json:"round"`
-	Time  int64  `json:"time"`
+	String string `json:"string"`
+	Body   []byte `json:"body"`
+	Round  int64  `json:"round"`
+	Time   int64  `json:"time"`
 }
 
 type Message struct {
 	Body string `json:"body"`
 }
 
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 func main() {
 	http.HandleFunc("/api/encrypt", func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
 		// Get arguments from the POST request
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
@@ -62,7 +68,7 @@ func main() {
 			return
 		}
 		round, _ := strconv.ParseInt(match[1], 10, 64)
-		enc := EncryptedMessage{Body: encryptedMessage.Bytes(), Round: round, Time: time.Now().Add(duration).Unix()}
+		enc := EncryptedMessage{Body: encryptedMessage.Bytes(), Round: round, Time: time.Now().Add(duration).Unix(), String: string(encryptedMessage.Bytes())}
 		json, err := json.Marshal(enc)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -73,6 +79,7 @@ func main() {
 	})
 
 	http.HandleFunc("/api/decrypt", func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
 		// Get arguments from the POST request
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
