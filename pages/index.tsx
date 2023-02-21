@@ -2,6 +2,10 @@ import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "@next/font/google";
 import { useState } from "react";
+// @ts-ignore
+// import {defaultClientInfo, roundForTime, timelockDecrypt, timelockEncrypt} from "tlock-js";
+require('isomorphic-fetch');
+
 import styles from "@/styles/Home.module.css";
 import {   Flex,
   Box,
@@ -24,6 +28,36 @@ import {   Flex,
 
 const inter = Inter({ subsets: ["latin"] });
 
+async function hashStringToUrl(s: string) {
+  // Convert string to numerical value
+  let num = 1;
+  for (let i = 0; i < s.length; i++) {
+    num *= s.charCodeAt(i);
+  }
+
+  // Take modulo with large prime number
+  var  hashValue = num % 2147483647;
+
+  // Convert hash value to base-62 representation
+  const alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  let digits = [];
+  let remainder;
+  while (hashValue > 0) {
+    remainder = hashValue % 62;
+    digits.unshift(alphabet[remainder]);
+    hashValue = Math.floor(hashValue / 62);
+  }
+
+  // Pad with leading zeros to ensure 6 digits
+  while (digits.length < 6) {
+    digits.unshift("0");
+  }
+
+  // Prepend URL prefix and return final URL
+  const prefix = process.env.SITE_URL + "/decrypt/" + "?hash=";
+  return prefix + digits.join("");
+}
+
 
 async function handleEncrypt(
   e: { preventDefault: () => void },
@@ -45,6 +79,8 @@ async function handleEncrypt(
   }
   console.log("Encrypting message: " + message + " for " + duration * multiplier + " seconds.")
   e.preventDefault();
+  // const ciphertext = await encrypt(message, duration * multiplier);
+
   const res = await fetch("/api/encrypt", {
     method: "POST",
     headers: {
@@ -53,9 +89,23 @@ async function handleEncrypt(
     body: JSON.stringify({ message: message, duration: duration }),
   });
   const data = await res.json();
-  console.log(data);
+
+  const ciphertext = data.body;
+  const round = data.round;
+
+  var url = await hashStringToUrl(ciphertext);
+
+  console.log("Encrypted message: " + ciphertext);
+  console.log("URL: " + url);
 
 }
+
+// async function encrypt(message: string, duration: number) {
+//   const clientInfo = defaultClientInfo();
+//   const expiry = roundForTime(clientInfo, Date.now() + duration * 1000);
+//   const encrypted = await timelockEncrypt(clientInfo, message, expiry);
+//   return encrypted;
+// }
 
 
 
@@ -130,36 +180,16 @@ export default function Home() {
               </Select>
               </FormControl>
             </Stack>
-            <Stack
-                direction={{ base: 'column', sm: 'row' }}
-                align={'start'}
-                justify={'space-between'}>
-              <Button
-                bg={'blue.400'}
-                color={'white'}
-                _hover={{
-                  bg: 'blue.500',
-                }}
-                onClick={(e) => handleEncrypt(e, message, duration, durationType)}>
-                Encrypt
-              </Button>
-              <Button
-                bg={'blue.400'}
-                color={'white'}
-                _hover={{
-                  bg: 'blue.500',
-                }}>
-                Share
-              </Button>
-              <Button
-                bg={'blue.400'}
-                color={'white'}
-                _hover={{
-                  bg: 'blue.500',
-                }}>
-                Post
-              </Button>
-            </Stack>
+            <Button
+              bg={'blue.400'}
+              color={'white'}
+              _hover={{
+                bg: 'blue.500',
+              }}
+              onClick={(e) => handleEncrypt(e, message, duration, durationType)}
+              >
+              Generate URL
+            </Button>
           </Stack>
         </Box>
       </Stack>

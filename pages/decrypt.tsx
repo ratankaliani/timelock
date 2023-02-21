@@ -28,16 +28,17 @@ import {
 
 const inter = Inter({ subsets: ["latin"] });
 
-async function parseTime(e: { preventDefault: () => void }, message: Uint8Array) {
-  // UNIX start of testnet
-  console.log("query", message)
-  var startTime = 1651677096;
-  // const encoder = new TextEncoder();
-  // var bytes = encoder.encode(message);
-  var messageString = message.toString();
+// async function getInfo(e: { preventDefault: () => void }, hashedURL: string) {
+//   // UNIX start of testnet
+//   console.log("query", hashedURL)
+//   // var startTime = 1651677096;
+//   // const encoder = new TextEncoder();
+//   const decoder = new TextDecoder();
+//   // var bytes = encoder.encode(message);
+//   // var messageString = decoder.decode(hashedURL);
 
-  console.log("Message: " + messageString);
-}
+//   console.log("Message: " + messageString);
+// }
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -93,7 +94,8 @@ const Home: NextPage = () => {
               _hover={{
                 bg: "blue.500",
               }}
-              onClick = {(e) => parseTime(e, message as string)}
+              // onClick = {(e) => parseTime(e, message as string)
+              // }
             >
               Request Reset
             </Button>
