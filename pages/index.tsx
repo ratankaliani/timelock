@@ -3,8 +3,8 @@ import Image from "next/image";
 import { Inter } from "@next/font/google";
 import { useState } from "react";
 // @ts-ignore
-import {defaultClientInfo, roundForTime, timelockDecrypt, timelockEncrypt} from "tlock-js";
-// require('isomorphic-fetch');
+import {defaultClientInfo, roundForTime, timelockEncrypt} from "tlock-js";
+require('isomorphic-fetch');
 import * as dotenv from 'dotenv'
 dotenv.config()
 

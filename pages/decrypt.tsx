@@ -4,6 +4,10 @@ import type { NextPage } from "next";
 import { Inter } from "@next/font/google";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import {defaultClientInfo, roundForTime, timelockDecrypt} from "tlock-js";
+require('isomorphic-fetch');
+
+
 
 import {
   Flex,
@@ -23,11 +27,13 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
+  Textarea,
   Select,
+  VStack,
 } from "@chakra-ui/react";
+import timelock from "./components/timelock";
 
 const inter = Inter({ subsets: ["latin"] });
-
 // async function getInfo(e: { preventDefault: () => void }, hashedURL: string) {
 //   // UNIX start of testnet
 //   console.log("query", hashedURL)
@@ -43,8 +49,25 @@ const inter = Inter({ subsets: ["latin"] });
 const Home: NextPage = () => {
   const router = useRouter();
   const [duration, setDuration] = useState<number>(1);
+  const [message, setMessage] = useState<string>("");
+  const [encryptedMessage, setEncryptedMessage] = useState<string>("");
+  const [isDecrypted, setIsDecrypted] = useState<boolean>(false);
 
-  const { message } = router.query;
+  async function decrypt(encMessage: string) {
+    console.log(encMessage)
+    const ongoingDecryption = setTimeout(() => timelockDecrypt(encMessage)
+            .then(c => setMessage(c))
+            .catch(err => {
+                console.error(err)
+            })
+            .finally(() => {
+                setIsDecrypted(true);
+            })
+    )
+    // const decryptedMessage = await timelockDecrypt(encMessage);
+    // setMessage(decryptedMessage as string);
+    // setIsDecrypted(true);
+  }
 
   return (
     <>
@@ -54,7 +77,6 @@ const Home: NextPage = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <Flex
         minH={"100vh"}
         align={"center"}
@@ -72,21 +94,21 @@ const Home: NextPage = () => {
           my={12}
         >
           <Heading lineHeight={1.1} fontSize={{ base: "2xl", md: "3xl" }}>
-            Forgot your password?
+            Decrypt a Message
           </Heading>
           <Text
             fontSize={{ base: "sm", sm: "md" }}
             color={useColorModeValue("gray.800", "gray.400")}
           >
-            You&apos;ll get an email with a reset link
+            Paste in the encrypted message below!
           </Text>
-          <FormControl id="email">
-            <Input
-              placeholder="your-email@example.com"
-              _placeholder={{ color: "gray.500" }}
-              type="email"
-            />
-          </FormControl>
+          <Input
+            placeholder=""
+            _placeholder={{ color: "gray.500" }}
+            type="text"
+            defaultValue={router.query.message as string}
+            onChange={(e) => setEncryptedMessage(e.target.value)}
+          />
           <Stack spacing={6}>
             <Button
               bg={"blue.400"}
@@ -94,13 +116,26 @@ const Home: NextPage = () => {
               _hover={{
                 bg: "blue.500",
               }}
+              onClick = {(e) => {
+                decrypt(encryptedMessage);
+              }}
               // onClick = {(e) => parseTime(e, message as string)
               // }
             >
-              Request Reset
+              Decrypt
             </Button>
           </Stack>
+          <Stack spacing={6}>
+            <Textarea
+              color={"white"}
+              value={message}
+              // onClick = {(e) => parseTime(e, message as string)
+              // }
+            >
+              
+            </Textarea>
         </Stack>
+        </Stack> 
       </Flex>
     </>
   );
