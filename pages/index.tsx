@@ -56,7 +56,7 @@ async function hashStringToUrl(s: string) {
   }
 
   // Prepend URL prefix and return final URL
-  const prefix = process.env.SITE_URL + "/decrypt/" + "?hash=";
+  const prefix = process.env.NEXT_PUBLIC_SITE_URL + "/decrypt/" + "?hash=";
   return prefix + digits.join("");
 }
 
