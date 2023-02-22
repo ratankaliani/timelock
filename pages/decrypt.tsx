@@ -54,8 +54,17 @@ const Home: NextPage = () => {
   const [isDecrypted, setIsDecrypted] = useState<boolean>(false);
 
   async function decrypt(encMessage: string) {
-    console.log(encMessage)
-    const ongoingDecryption = setTimeout(() => timelockDecrypt(encMessage)
+    const tempEncMessage = `-----BEGIN AGE ENCRYPTED FILE-----
+    \nYWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IHRsb2NrIDg0NzY0MDcgNzY3Mjc5N2Y1
+    \nNDhmM2Y0NzQ4YWM0YmYzMzUyZmM2YzZiNjQ2OGM5YWQ0MGFkNDU2YTM5NzU0NWM2
+    \nZTJkZjViZgpoTGovQ3dzdkJ0VEczRktRb3g5aUwyMEdJSDNtdVZQWEx5SXFscHRM
+    \nbmUvKzZ5QlhVeEk3OFVJNXoxSXNUYWl5CjBnUEkwWURvWEMwVHJPNGEyR1pLRzg0
+    \nQkVpMWJXbU5hMVEzYnhKbmNuSkkKLS0tIDg0aDJHRjgvcWxzWlRydi91eU1TR1BZ
+    \nbDhRNWJuVWlHVmE1aU9BNEprUFUKI+bpvhQfCaaNFrXnAG2i9cfJJd2MqJCSX2oD
+    \niUg5EzZ3uzT8cw==
+    \n-----END AGE ENCRYPTED FILE-----`
+    console.log(tempEncMessage)
+    const ongoingDecryption = setTimeout(() => timelockDecrypt(tempEncMessage)
             .then(c => setMessage(c))
             .catch(err => {
                 console.error(err)
@@ -63,7 +72,7 @@ const Home: NextPage = () => {
             .finally(() => {
                 setIsDecrypted(true);
             })
-    )
+    );
     // const decryptedMessage = await timelockDecrypt(encMessage);
     // setMessage(decryptedMessage as string);
     // setIsDecrypted(true);
