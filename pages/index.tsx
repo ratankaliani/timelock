@@ -3,8 +3,10 @@ import Image from "next/image";
 import { Inter } from "@next/font/google";
 import { useState } from "react";
 // @ts-ignore
-// import {defaultClientInfo, roundForTime, timelockDecrypt, timelockEncrypt} from "tlock-js";
-require('isomorphic-fetch');
+import {defaultClientInfo, roundForTime, timelockDecrypt, timelockEncrypt} from "tlock-js";
+// require('isomorphic-fetch');
+import * as dotenv from 'dotenv'
+dotenv.config()
 
 import styles from "@/styles/Home.module.css";
 import {   Flex,
@@ -79,33 +81,35 @@ async function handleEncrypt(
   }
   console.log("Encrypting message: " + message + " for " + duration * multiplier + " seconds.")
   e.preventDefault();
-  // const ciphertext = await encrypt(message, duration * multiplier);
+  const ciphertext = await encrypt(message, duration * multiplier);
 
-  const res = await fetch("/api/encrypt", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ message: message, duration: duration }),
-  });
-  const data = await res.json();
+  // const res = await fetch("http://localhost:8080/api/encrypt", {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //     'Access-Control-Allow-Origin': '*',
+  //   },
+  //   body: JSON.stringify({ message: message, duration: duration }),
+  // });
+  // const data = await res.json();
 
-  const ciphertext = data.body;
-  const round = data.round;
+  // const ciphertext = data.body;
+  // const round = data.round;
 
-  var url = await hashStringToUrl(ciphertext);
+  const url = await hashStringToUrl(ciphertext);
 
   console.log("Encrypted message: " + ciphertext);
   console.log("URL: " + url);
 
 }
 
-// async function encrypt(message: string, duration: number) {
-//   const clientInfo = defaultClientInfo();
-//   const expiry = roundForTime(clientInfo, Date.now() + duration * 1000);
-//   const encrypted = await timelockEncrypt(clientInfo, message, expiry);
-//   return encrypted;
-// }
+async function encrypt(message: string, duration: number) {
+  const clientInfo = defaultClientInfo;
+  const messageBuffer = Buffer.from(message)
+  const expiry = roundForTime(Date.now() + duration * 1000, clientInfo);
+  const encrypted = await timelockEncrypt(expiry, messageBuffer);
+  return encrypted;
+}
 
 
 

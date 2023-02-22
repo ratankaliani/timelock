@@ -29,7 +29,9 @@ type Message struct {
 }
 
 func enableCors(w *http.ResponseWriter) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Add("Access-Control-Allow-Origin", "*")
+	(*w).Header().Add("Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS")
+	(*w).Header().Add("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
 }
 
 func main() {
@@ -76,6 +78,8 @@ func main() {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(json)
+		return
+
 	})
 
 	http.HandleFunc("/api/decrypt", func(w http.ResponseWriter, r *http.Request) {
@@ -111,6 +115,7 @@ func main() {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(json)
+		return
 	})
 
 	fmt.Println("Listening on port 8080")

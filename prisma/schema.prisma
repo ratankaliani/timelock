@@ -1,0 +1,18 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "cockroachdb"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model EncryptedMessage {
+  id        Int      @id @default(autoincrement())
+  encryptedMessage String @db.VarChar(255)
+  url   String   @db.VarChar(255)
+  expiry    DateTime @default(now())
+}
